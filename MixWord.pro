@@ -40,7 +40,12 @@ HEADERS += \
         view/tab.h \
         view/fileencryptpage/fileencryptpage.h
 
+TRANSLATIONS = i18n/zh_CN.ts
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    translations.qrc
