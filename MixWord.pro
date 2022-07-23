@@ -32,7 +32,8 @@ SOURCES += \
         view/fileencryptpage/fileencryptpage.cpp \
     view/textencryptpage/textencryptpage.cpp \
     common/utils.cpp \
-    common/ddestylemenubutton.cpp
+    common/ddestylemenubutton.cpp \
+    common/cryptthread.cpp
 
 HEADERS += \
         lib/Qt-AES-1.2/aesni/aesni-enc-cbc.h \
@@ -44,7 +45,8 @@ HEADERS += \
         view/fileencryptpage/fileencryptpage.h \
     view/textencryptpage/textencryptpage.h \
     common/utils.h \
-    common/ddestylemenubutton.h
+    common/ddestylemenubutton.h \
+    common/cryptthread.h
 
 TRANSLATIONS = i18n/zh_CN.ts
 

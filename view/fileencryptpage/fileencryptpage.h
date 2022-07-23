@@ -1,6 +1,8 @@
 #ifndef FILEENCRYPTPAGE_H
 #define FILEENCRYPTPAGE_H
 
+#include "common/cryptthread.h"
+
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QLabel>
@@ -16,6 +18,12 @@ public:
 private:
     void initUI();
 
+    void showWaitNotifyWindow();
+
+    void hideWaitNotifyWindow();
+
+    CryptThread *cryptThread = nullptr;
+
     QVBoxLayout *mainlayout = nullptr;
 
     QLabel *fileToBeEncrypt = nullptr;
@@ -30,9 +38,15 @@ private:
     QString filenameToDec = "";
     QString decryptKeySeed = "";
 
+    QWidget *waitNotifyWindow = nullptr;
+
 signals:
 
 public slots:
+
+    void onEncFinished(QByteArray ret);
+
+    void onDecFinished(QByteArray ret);
 
 private slots:
     void onToEncSelectBtnClicked();

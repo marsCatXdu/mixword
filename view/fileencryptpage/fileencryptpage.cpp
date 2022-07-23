@@ -1,6 +1,7 @@
 #include "lib/Qt-AES-1.2/qaesencryption.h"
 #include "fileencryptpage.h"
 #include "common/utils.h"
+#include "common/cryptthread.h"
 
 #include <QCryptographicHash>
 #include <QDataStream>
@@ -14,9 +15,13 @@
 #include <QOperatingSystemVersion>
 #include <QDesktopServices>
 #include <QProcess>
+#include <QDesktopWidget>
+#include <QApplication>
 
 FileEncryptPage::FileEncryptPage(QWidget *parent) : QWidget(parent)
 {
+    qRegisterMetaType<CryptAlg>("CryptAlg");
+    qRegisterMetaType<CryptMode>("CryptMode");
     initUI();
 }
 
@@ -106,28 +111,20 @@ void FileEncryptPage::encryptFile()
         outputEncryptedFileLabel->setVisible(true);
         return;
     }
-    QByteArray base64File = inputFile.readAll().toBase64(QByteArray::Base64UrlEncoding);
+    QByteArray fileByteArray = inputFile.readAll();
     inputFile.close();
 
-    base64File.append("+++");         // 分隔符
-
-    QByteArray hashKey = QCryptographicHash::hash(encryptKeySeed.toLocal8Bit(), QCryptographicHash::Sha256);
-    QByteArray ret = QAESEncryption::Crypt(QAESEncryption::AES_256, QAESEncryption::ECB, base64File, hashKey);
-
-    QString outputFilename = filenameToEnc + ".lraes256ecbenc";
-    QFile outputFile(outputFilename);
-    if(!outputFile.open(QFile::WriteOnly)) {
-        return;
+    if(cryptThread!=nullptr) {
+        delete cryptThread;
+        cryptThread = nullptr;
     }
-    outputFile.write(ret);
-    outputFile.close();
+    cryptThread = new CryptThread(CryptAlg::AES_ECB, CryptMode::Encrypt, encryptKeySeed, fileByteArray);
+    connect(cryptThread, &CryptThread::algFinished, this, &FileEncryptPage::onEncFinished);
 
-    outputEncryptedFileLabel->setText(tr("Completed!\nOutput file:\t") + outputFilename);
-    outputEncryptedFileLabel->setVisible(true);
+    cryptThread->start();
 
-    startEncrypt->setEnabled(false);
-
-    Utils::openExplorerAndSelectFile(outputFilename);
+    showWaitNotifyWindow();
+    this->setEnabled(false);
 }
 
 void FileEncryptPage::onToDecSelectBtnClicked()
@@ -152,18 +149,48 @@ void FileEncryptPage::decryptFile()
     QByteArray cypher = inputFile.readAll();
     inputFile.close();
 
-    QByteArray hashKey = QCryptographicHash::hash(decryptKeySeed.toLocal8Bit(), QCryptographicHash::Sha256);
-    QByteArray dec = QAESEncryption::Decrypt(QAESEncryption::AES_256, QAESEncryption::ECB, cypher, hashKey);
-    if(dec.isEmpty()) {
+    if(cryptThread!=nullptr) {
+        delete cryptThread;
+        cryptThread = nullptr;
+    }
+    cryptThread = new CryptThread(CryptAlg::AES_ECB, CryptMode::Decrypt, decryptKeySeed, cypher);
+    connect(cryptThread, &CryptThread::algFinished, this, &FileEncryptPage::onDecFinished);
+
+    cryptThread->start();
+
+    showWaitNotifyWindow();
+    this->setEnabled(false);
+}
+
+void FileEncryptPage::onEncFinished(QByteArray ret)
+{
+    QString outputFilename = filenameToEnc + ".lraes256ecbenc";
+    QFile outputFile(outputFilename);
+    if(!outputFile.open(QFile::WriteOnly)) {
+        return;
+    }
+    outputFile.write(ret);
+    outputFile.close();
+
+    outputEncryptedFileLabel->setText(tr("Completed!\nOutput file:\t") + outputFilename);
+    outputEncryptedFileLabel->setVisible(true);
+
+    startEncrypt->setEnabled(false);
+
+    hideWaitNotifyWindow();
+    this->setEnabled(true);
+
+    Utils::openExplorerAndSelectFile(outputFilename);
+}
+
+void FileEncryptPage::onDecFinished(QByteArray ret)
+{
+    if(ret.isEmpty()) {
         outputDecryptedFileLabel->setText(tr("DECODE ERROR!"));
         outputDecryptedFileLabel->setVisible(true);
         startDecrypt->setEnabled(false);
         return;
     }
-    QString decStr = QString::fromLocal8Bit(dec);
-    decStr = decStr.left(decStr.lastIndexOf("+++"));
-
-    QByteArray base64Decoded = QByteArray::fromBase64(decStr.toLocal8Bit(), QByteArray::Base64UrlEncoding);
 
     QString outputFilename = filenameToDec.left(filenameToDec.lastIndexOf('.'));
     QString dirPath = outputFilename.left(outputFilename.lastIndexOf('/')+1);
@@ -174,12 +201,40 @@ void FileEncryptPage::decryptFile()
         outputDecryptedFileLabel->setText(tr("SAVE FILE FAILED."));
         return;
     }
-    outputFile.write(base64Decoded);
+    outputFile.write(ret);
     outputFile.close();
 
     outputDecryptedFileLabel->setText(tr("Completed!\nOutput file:\t") + outputFilename);
     outputDecryptedFileLabel->setVisible(true);
     startDecrypt->setEnabled(false);
 
+    hideWaitNotifyWindow();
+    this->setEnabled(true);
+
     Utils::openExplorerAndSelectFile(outputFilename);
 }
+
+void FileEncryptPage::showWaitNotifyWindow()
+{
+    if(waitNotifyWindow!=nullptr) {
+        delete waitNotifyWindow;
+        waitNotifyWindow = nullptr;
+    }
+    waitNotifyWindow = new QWidget();
+    waitNotifyWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowTitleHint);
+    QVBoxLayout *wnLayout = new QVBoxLayout(waitNotifyWindow);
+    QLabel *notifyTextLabel = new QLabel(tr("Larger files may takes longer. Please wait."));
+    wnLayout->addWidget(notifyTextLabel);
+    waitNotifyWindow->show();
+    const QDesktopWidget *const desktop = QApplication::desktop();
+    waitNotifyWindow->setFixedSize(400, 100);
+    waitNotifyWindow->move((desktop->width() - waitNotifyWindow->width()) / 2, (desktop->height() - waitNotifyWindow->height()) / 2);
+}
+
+void FileEncryptPage::hideWaitNotifyWindow()
+{
+    waitNotifyWindow->hide();
+    delete waitNotifyWindow;
+    waitNotifyWindow = nullptr;
+}
+
