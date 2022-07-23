@@ -6,14 +6,15 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QLabel>
+#include <QFrame>
 #include <QWidget>
 #include <QObject>
 
-class FileEncryptPage : public QWidget
+class FileEncryptPage : public QFrame
 {
     Q_OBJECT
 public:
-    explicit FileEncryptPage(QWidget *parent = nullptr);
+    explicit FileEncryptPage(QFrame *parent = nullptr);
 
 private:
     void initUI();

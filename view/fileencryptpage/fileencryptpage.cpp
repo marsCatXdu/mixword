@@ -6,6 +6,7 @@
 #include <QCryptographicHash>
 #include <QDataStream>
 
+#include <QTextStream>
 #include <QFileDialog>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -18,7 +19,7 @@
 #include <QDesktopWidget>
 #include <QApplication>
 
-FileEncryptPage::FileEncryptPage(QWidget *parent) : QWidget(parent)
+FileEncryptPage::FileEncryptPage(QFrame *parent) : QFrame(parent)
 {
     qRegisterMetaType<CryptAlg>("CryptAlg");
     qRegisterMetaType<CryptMode>("CryptMode");
@@ -28,6 +29,9 @@ FileEncryptPage::FileEncryptPage(QWidget *parent) : QWidget(parent)
 void FileEncryptPage::initUI()
 {
     mainlayout = new QVBoxLayout(this);
+    mainlayout->setSpacing(14);
+    this->setObjectName("FileEncryptPageFrame");
+    this->setStyleSheet("QFrame#FileEncryptPageFrame {background-color: #FFFFFF; border-radius: 8px; padding: 4px;}");
 
     QHBoxLayout *fileSelectLayout = new QHBoxLayout();
     QLabel *encryptTitle = new QLabel(tr("Encrypt File"));

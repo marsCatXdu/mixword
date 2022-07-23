@@ -1,0 +1,38 @@
+QPushButton {
+    border: 1px solid #DBDBDB;
+    border-radius: 7px;
+    background-color: #E5E5E5;
+    min-width: 80px;
+    padding: 8px 10px 8px 10px;
+}
+
+QPushButton:hover {
+    background-color: #CECECE;
+}
+
+QPushButton:pressed {
+    background-color: #A9B6CE;
+    color: #0081FF;
+}
+
+QPushButton:flat {
+    border: none; /* no border for a flat push button */
+}
+
+QPushButton:focus{outline: none;}
+
+QPushButton:default {
+    border-color: navy; /* make the default button prominent */
+}
+
+QLineEdit {
+    border: 1px solid #DBDBDB;
+    border-radius: 8px;
+    padding: 6px 8px 6px 8px;
+    background: #E5E5E5;
+    selection-background-color: #E5E5E5;
+}
+
+QLineEdit:focus {
+    border: 2px solid #0077E6;
+}

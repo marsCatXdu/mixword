@@ -18,10 +18,10 @@ DDEStyleMenuButton::DDEStyleMenuButton(const QString & text, const int & id, QWi
 void DDEStyleMenuButton::setSelected(bool isSelected)
 {
     if(isSelected) {
-        setStyleSheet("DDEStyleMenuButton { background-color: #0080FF; border-radius: 8px; padding: 5px} DDEStyleMenuButton:hover{background-color: #339CFF; }");
+        setStyleSheet("DDEStyleMenuButton { background-color: #0080FF; border-radius: 8px; padding: 8px 5px 8px 5px} DDEStyleMenuButton:hover{background-color: #339CFF; }");
         btnText->setStyleSheet("background-color: transparent; color: white");
     } else {
-        setStyleSheet("DDEStyleMenuButton { background-color: #FFFFFF; border-radius: 8px; padding: 5px} DDEStyleMenuButton:hover{background-color: #E3E3E3; }");
+        setStyleSheet("DDEStyleMenuButton { background-color: #FFFFFF; border-radius: 8px; padding: 8px 5px 8px 5px} DDEStyleMenuButton:hover{background-color: #E3E3E3; }");
         btnText->setStyleSheet("background-color: transparent; color: #414D68");
     }
 }

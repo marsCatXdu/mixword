@@ -6,6 +6,9 @@
 #include <QDesktopWidget>
 #include <QApplication>
 
+#include <QTextStream>
+#include <QFile>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -29,4 +32,9 @@ void MainWindow::initUI()
     Tab *tab1 = new Tab();
     tabs->addWidget(tab1);
     tabs->setCurrentIndex(0);
+
+    QFile file(":/default.qss");
+    file.open(QIODevice::ReadOnly);
+    QTextStream in(&file);
+    setStyleSheet(in.readAll());
 }

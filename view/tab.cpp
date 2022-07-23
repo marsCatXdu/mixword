@@ -41,6 +41,7 @@ void Tab::initUI()
     listLayout->addStretch();
 
     pageContainer = new QStackedWidget(this);
+    pageContainer->setStyleSheet("QStackedWidget {padding: 12px 12px 12px 12px; background-color: #F8F8F8}");
     FileEncryptPage *fileEncryptPage = new FileEncryptPage();
     TextEncryptPage *textEncryptPage = new TextEncryptPage();
     pageContainer->addWidget(fileEncryptPage);
