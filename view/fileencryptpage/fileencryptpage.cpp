@@ -1,9 +1,9 @@
 #include "lib/Qt-AES-1.2/qaesencryption.h"
 #include "fileencryptpage.h"
+#include "common/utils.h"
 
 #include <QCryptographicHash>
 #include <QDataStream>
-#include <QDesktopServices>
 
 #include <QFileDialog>
 #include <QPushButton>
@@ -11,8 +11,8 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
-
 #include <QOperatingSystemVersion>
+#include <QDesktopServices>
 #include <QProcess>
 
 FileEncryptPage::FileEncryptPage(QWidget *parent) : QWidget(parent)
@@ -40,7 +40,7 @@ void FileEncryptPage::initUI()
     encKeySeedEdit->setText(encryptKeySeed);
     encKeySeedLayout->addWidget(encKeySeedLabel);
     encKeySeedLayout->addWidget(encKeySeedEdit);
-    connect(encKeySeedEdit, &QLineEdit::textChanged, this, &FileEncryptPage::onEncKeySeedEditChanged);
+    connect(encKeySeedEdit, &QLineEdit::textChanged, this, [=](const QString & newText){ encryptKeySeed = newText; });
 
     startEncrypt = new QPushButton(tr("Encrypt File"));
     connect(startEncrypt, &QPushButton::clicked, this, &FileEncryptPage::encryptFile);
@@ -48,7 +48,6 @@ void FileEncryptPage::initUI()
 
     outputEncryptedFileLabel = new QLabel(this);
     outputEncryptedFileLabel->setVisible(false);
-
 
     QHBoxLayout *decFileSelectLayout = new QHBoxLayout();
     QLabel *decryptTitle = new QLabel(tr("Decrypt File"));
@@ -66,7 +65,7 @@ void FileEncryptPage::initUI()
     decKeySeedEdit->setText(decryptKeySeed);
     decKeySeedLayout->addWidget(decKeySeedLabel);
     decKeySeedLayout->addWidget(decKeySeedEdit);
-    connect(decKeySeedEdit, &QLineEdit::textChanged, this, &FileEncryptPage::onDecKeySeedEditChanged);
+    connect(decKeySeedEdit, &QLineEdit::textChanged, this, [=](const QString & newText){ decryptKeySeed = newText; });
 
     startDecrypt = new QPushButton(tr("Decrypt File"));
     connect(startDecrypt, &QPushButton::clicked, this, &FileEncryptPage::decryptFile);
@@ -86,9 +85,7 @@ void FileEncryptPage::initUI()
     mainlayout->addLayout(decFileSelectLayout);
     mainlayout->addWidget(outputDecryptedFileLabel);
     mainlayout->addWidget(startDecrypt);
-
     mainlayout->addStretch();
-
 }
 
 void FileEncryptPage::onToEncSelectBtnClicked()
@@ -112,17 +109,12 @@ void FileEncryptPage::encryptFile()
     QByteArray base64File = inputFile.readAll().toBase64(QByteArray::Base64UrlEncoding);
     inputFile.close();
 
-    base64File.append('+');
-    base64File.append('+');
-    base64File.append('+');         // 分隔符
+    base64File.append("+++");         // 分隔符
 
-//    QString key("123456789123");
     QByteArray hashKey = QCryptographicHash::hash(encryptKeySeed.toLocal8Bit(), QCryptographicHash::Sha256);
-
     QByteArray ret = QAESEncryption::Crypt(QAESEncryption::AES_256, QAESEncryption::ECB, base64File, hashKey);
 
     QString outputFilename = filenameToEnc + ".lraes256ecbenc";
-
     QFile outputFile(outputFilename);
     if(!outputFile.open(QFile::WriteOnly)) {
         return;
@@ -135,17 +127,15 @@ void FileEncryptPage::encryptFile()
 
     startEncrypt->setEnabled(false);
 
-    if(QOperatingSystemVersion::currentType()==QOperatingSystemVersion::Windows) {  // Windows
-        QProcess::startDetached(QString("explorer.exe /select, ") + QDir::toNativeSeparators(outputFilename));
-    } else {                                                                        // *nix
-        QDesktopServices::openUrl(QUrl("file:///"+outputFilename.left(filenameToEnc.lastIndexOf('/'))));
-    }
+    Utils::openExplorerAndSelectFile(outputFilename);
 }
 
 void FileEncryptPage::onToDecSelectBtnClicked()
 {
     filenameToDec = QFileDialog::getOpenFileName(this, tr("Select File"), QDir::homePath());
-    if(filenameToDec.isEmpty()) return;
+    if(filenameToDec.isEmpty()) {
+        return;
+    }
     fileToBeDecrypt->setText(tr("Select file:\t") + filenameToDec);
     outputDecryptedFileLabel->setVisible(false);
     startDecrypt->setEnabled(true);
@@ -170,20 +160,16 @@ void FileEncryptPage::decryptFile()
         startDecrypt->setEnabled(false);
         return;
     }
-
     QString decStr = QString::fromLocal8Bit(dec);
     decStr = decStr.left(decStr.lastIndexOf("+++"));
 
     QByteArray base64Decoded = QByteArray::fromBase64(decStr.toLocal8Bit(), QByteArray::Base64UrlEncoding);
 
-    QString outputFilename = filenameToDec.left(filenameToDec.lastIndexOf('.'));    // 文件名已恢复
-
+    QString outputFilename = filenameToDec.left(filenameToDec.lastIndexOf('.'));
     QString dirPath = outputFilename.left(outputFilename.lastIndexOf('/')+1);
     QString filename = "DEC_" + outputFilename.right(outputFilename.length() - outputFilename.lastIndexOf('/')-1);
-    qDebug("%s\n%s", qPrintable(dirPath), qPrintable(filename));
-    outputFilename = dirPath + filename;
 
-    QFile outputFile(outputFilename);
+    QFile outputFile(dirPath + filename);
     if(!outputFile.open(QFile::WriteOnly)) {
         outputDecryptedFileLabel->setText(tr("SAVE FILE FAILED."));
         return;
@@ -195,19 +181,5 @@ void FileEncryptPage::decryptFile()
     outputDecryptedFileLabel->setVisible(true);
     startDecrypt->setEnabled(false);
 
-    if(QOperatingSystemVersion::currentType()==QOperatingSystemVersion::Windows) {  // Windows
-        QProcess::startDetached(QString("explorer.exe /select, ") + QDir::toNativeSeparators(outputFilename));
-    } else {                                                                        // *nix
-        QDesktopServices::openUrl(QUrl("file:///"+outputFilename.left(filenameToEnc.lastIndexOf('/'))));
-    }
-}
-
-void FileEncryptPage::onEncKeySeedEditChanged(const QString &newText)
-{
-    encryptKeySeed = newText;
-}
-
-void FileEncryptPage::onDecKeySeedEditChanged(const QString &newText)
-{
-    decryptKeySeed = newText;
+    Utils::openExplorerAndSelectFile(outputFilename);
 }

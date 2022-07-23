@@ -29,5 +29,4 @@ void MainWindow::initUI()
     Tab *tab1 = new Tab();
     tabs->addWidget(tab1);
     tabs->setCurrentIndex(0);
-
 }

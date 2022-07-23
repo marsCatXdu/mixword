@@ -37,13 +37,9 @@ public slots:
 private slots:
     void onToEncSelectBtnClicked();
 
-    void onEncKeySeedEditChanged(const QString &newText);
-
     void encryptFile();
 
     void onToDecSelectBtnClicked();
-
-    void onDecKeySeedEditChanged(const QString &newText);
 
     void decryptFile();
 

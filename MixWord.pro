@@ -29,7 +29,10 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         view/tab.cpp \
-        view/fileencryptpage/fileencryptpage.cpp
+        view/fileencryptpage/fileencryptpage.cpp \
+    view/textencryptpage/textencryptpage.cpp \
+    common/utils.cpp \
+    common/ddestylemenubutton.cpp
 
 HEADERS += \
         lib/Qt-AES-1.2/aesni/aesni-enc-cbc.h \
@@ -38,7 +41,10 @@ HEADERS += \
         lib/Qt-AES-1.2/qaesencryption.h \
         mainwindow.h \
         view/tab.h \
-        view/fileencryptpage/fileencryptpage.h
+        view/fileencryptpage/fileencryptpage.h \
+    view/textencryptpage/textencryptpage.h \
+    common/utils.h \
+    common/ddestylemenubutton.h
 
 TRANSLATIONS = i18n/zh_CN.ts
 
