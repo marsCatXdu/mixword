@@ -4,6 +4,7 @@
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include <QDesktopWidget>
+#include <QScreen>
 #include <QApplication>
 
 #include <QTextStream>
@@ -13,8 +14,10 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     const QDesktopWidget *const desktop = QApplication::desktop();
-    setFixedSize(800, 450);
+    setFixedSize(800, 500);
     move((desktop->width() - this->width()) / 2, (desktop->height() - this->height()) / 2);
+
+    qDebug("%d", desktop->logicalDpiX());
 
     initUI();
 }
@@ -33,8 +36,25 @@ void MainWindow::initUI()
     tabs->addWidget(tab1);
     tabs->setCurrentIndex(0);
 
-    QFile file(":/default.qss");
-    file.open(QIODevice::ReadOnly);
-    QTextStream in(&file);
-    setStyleSheet(in.readAll());
+    QScreen *screen = QApplication::screens()[0];
+    connect(screen, &QScreen::logicalDotsPerInchChanged, this, &MainWindow::onLogicalDPIChanged);
+    qDebug("%f", screen->logicalDotsPerInch());
+
+    if(QApplication::desktop()->logicalDpiX()>=144) {
+        QFile file(":/hdpi_fit.qss");
+        file.open(QIODevice::ReadOnly);
+        QTextStream in(&file);
+        setStyleSheet(in.readAll());
+    } else {
+        QFile file(":/default.qss");
+        file.open(QIODevice::ReadOnly);
+        QTextStream in(&file);
+        setStyleSheet(in.readAll());
+    }
+
+}
+
+void MainWindow::onLogicalDPIChanged(qreal dpi)
+{
+    qDebug("%f", dpi);
 }

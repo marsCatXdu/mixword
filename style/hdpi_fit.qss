@@ -1,9 +1,13 @@
+QVBoxLayout#FileEncryptPageLayout {
+    spacing: 24px;
+}
+
 QPushButton {
     border: 1px solid #DBDBDB;
     border-radius: 7px;
     background-color: #E5E5E5;
     min-width: 80px;
-    min-height: 20px;
+    min-height: 24px;
     padding: 8px 10px 8px 10px;
 }
 

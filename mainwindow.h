@@ -14,6 +14,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void onLogicalDPIChanged(qreal dpi);
+
 private:
     void initUI();
 

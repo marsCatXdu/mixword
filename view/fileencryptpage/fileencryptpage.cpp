@@ -30,6 +30,7 @@ void FileEncryptPage::initUI()
 {
     mainlayout = new QVBoxLayout(this);
     mainlayout->setSpacing(14);
+    mainlayout->setObjectName("FileEncryptPageLayout");
     this->setObjectName("FileEncryptPageFrame");
     this->setStyleSheet("QFrame#FileEncryptPageFrame {background-color: #FFFFFF; border-radius: 8px; padding: 4px;}");
 

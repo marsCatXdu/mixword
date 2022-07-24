@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>default.qss</file>
         <file>HarmonyOS_Sans_SC_Regular.ttf</file>
+        <file>hdpi_fit.qss</file>
     </qresource>
 </RCC>
