@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     const QDesktopWidget *const desktop = QApplication::desktop();
-    setFixedSize(800, 500);
+    setMinimumSize(900, 550);
     move((desktop->width() - this->width()) / 2, (desktop->height() - this->height()) / 2);
 
     qDebug("%d", desktop->logicalDpiX());

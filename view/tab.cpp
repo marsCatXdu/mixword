@@ -26,8 +26,8 @@ void Tab::initUI()
     tabLayout->setSpacing(0);
 
     QFrame *listFrame = new QFrame();
-    listFrame->setFixedWidth(200);
-    listFrame->setStyleSheet("QFrame {background-color: #FEFEFE}");
+    listFrame->setFixedWidth(240);
+    listFrame->setObjectName("listFrame");
     QVBoxLayout *listLayout = new QVBoxLayout(listFrame);
 
     DDEStyleMenuButton *btn1 = new DDEStyleMenuButton(tr("File Encryption"), 0);
@@ -41,7 +41,7 @@ void Tab::initUI()
     listLayout->addStretch();
 
     pageContainer = new QStackedWidget(this);
-    pageContainer->setStyleSheet("QStackedWidget {padding: 12px 12px 12px 12px; background-color: #F8F8F8}");
+    pageContainer->setObjectName("pageContainer");
     FileEncryptPage *fileEncryptPage = new FileEncryptPage();
     TextEncryptPage *textEncryptPage = new TextEncryptPage();
     pageContainer->addWidget(fileEncryptPage);

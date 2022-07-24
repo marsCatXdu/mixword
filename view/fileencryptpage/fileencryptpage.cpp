@@ -29,10 +29,9 @@ FileEncryptPage::FileEncryptPage(QFrame *parent) : QFrame(parent)
 void FileEncryptPage::initUI()
 {
     mainlayout = new QVBoxLayout(this);
-    mainlayout->setSpacing(14);
+    mainlayout->setSpacing(16);
     mainlayout->setObjectName("FileEncryptPageLayout");
     this->setObjectName("FileEncryptPageFrame");
-    this->setStyleSheet("QFrame#FileEncryptPageFrame {background-color: #FFFFFF; border-radius: 8px; padding: 4px;}");
 
     QHBoxLayout *fileSelectLayout = new QHBoxLayout();
     QLabel *encryptTitle = new QLabel(tr("Encrypt File"));

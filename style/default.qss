@@ -1,3 +1,19 @@
+QStackedWidget#pageContainer {
+    padding: 14px 14px 14px 14px;
+    background-color: #F6F6F6
+}
+
+QFrame#listFrame {
+    background-color: #FEFEFE;
+    width: 260px;
+}
+
+QFrame#FileEncryptPageFrame {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 4px;
+}
+
 QPushButton {
     border: 1px solid #DBDBDB;
     border-radius: 7px;

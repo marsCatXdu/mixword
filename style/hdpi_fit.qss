@@ -1,14 +1,26 @@
-QVBoxLayout#FileEncryptPageLayout {
-    spacing: 24px;
+QStackedWidget#pageContainer {
+    padding: 14px 14px 14px 14px;
+    background-color: #F6F6F6
+}
+
+QFrame#listFrame {
+    background-color: #FEFEFE;
+    width: 260px;
+}
+
+QFrame#FileEncryptPageFrame {
+    background-color: #FFFFFF;
+    border-radius: 14px;
+    padding: 12px;
 }
 
 QPushButton {
     border: 1px solid #DBDBDB;
     border-radius: 7px;
     background-color: #E5E5E5;
-    min-width: 80px;
-    min-height: 24px;
-    padding: 8px 10px 8px 10px;
+    min-width: 100px;
+    min-height: 26px;
+    padding: 10px 14px 10px 14px;
 }
 
 QPushButton:hover {
